@@ -28,12 +28,7 @@ class SearchForm extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-
-    request.get(`${API_URL}/${this.state.boardName}.json?limit=${this.state.limit}`)
-      .then(res => this.props.context.setState({topics : res.body}))
-      .catch(error => {
-        console.log(error.message);
-      });
+    this.props.handleSearch(this.state.boardName, this.state.limit);
   }
   render() {
     return (
@@ -63,6 +58,10 @@ class SearchResultList extends React.Component {
   constructor(props) {
     super(props);
   }
+
+  // addTopic(topic) {
+
+  // }
   render() {
     return (
       <div>
@@ -71,11 +70,13 @@ class SearchResultList extends React.Component {
             <h1>Results</h1>
             <ul>
               {this.props.topics.map((item, i) => {
+                  
                 return (
                   <li key={i}>
-                    <a href={item.url}><h4>{i + 1}</h4><h3>{item.title}</h3><p>{item.ups}upvotes</p></a>
+                    <a href={item.data.url}><h4>{i + 1}</h4><h3>{item.data.title}</h3><p>{item.data.ups}upvotes</p></a>
                   </li>
                 );
+                
               })}
             </ul> 
           </section> :
@@ -94,6 +95,35 @@ class App extends React.Component {
     this.state = {
       topics:[],
     };
+    // this.handleTopics = this.handleTopics.bind(this);
+    this.getApp = this.getApp.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+  }
+
+  handleSearch(boardName, limit) {
+    request.get(`${API_URL}/${boardName}.json?limit=${limit}`)
+      .then(res => { 
+        let topics = res.body.data.children;
+        let topics2 = topics.filter(topics => !topics.data.stickied);
+        return topics2;
+      })
+      .then(topics => this.setState({topics}))
+        
+      .catch(error => {
+        console.log(error.message);
+      });
+  }
+
+  componentDidUpdate() {
+    console.log('__STATE__', this.state);
+  }
+
+
+  getApp() {
+    return{
+      state: this.state,
+      setState: this.setState.bind(this),
+    };
   }
 
   render() {
@@ -101,7 +131,7 @@ class App extends React.Component {
       
       <section>
         <h1>Search Form</h1>
-        <SearchForm context={this}/>
+        <SearchForm handleSearch={this.handleSearch}/>
         <div>
           <SearchResultList topics={this.state.topics} />
         </div>
