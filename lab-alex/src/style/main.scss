@@ -1,3 +1,65 @@
-.error {
-  border: red 1px solid;
+@import 'reset';
+
+form.formError {
+  input {
+    border: red 2px solid;
+  }
+  
+}
+form.formValid {
+  input {
+    border: green 2px solid;
+  }
+  
+}
+
+header{ 
+  background-color: red;
+  height: 50px;
+  padding: 20px;
+  padding-bottom: 10px;
+  color: #fff;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+}
+
+
+h1 {
+  font-size: 30px;
+  padding-bottom: 5px;
+}
+
+h2{
+  font-size: 20px;
+}
+input {
+  height: 20px;
+  width: 270px;
+  margin: 10px;
+}
+
+footer {
+  background-color: red;
+  height: 50px;
+  margin-top: 400px;
+}
+
+.app {
+  padding: 10px;
+}
+
+li {
+  
+  padding: 10px;
+}
+h4 {
+  font-weight: bold;
+  float: left;
+}
+p {
+  font-weight: bold;
+  float: right;
 }

@@ -1,5 +1,6 @@
 'use strict';
 
+import './style/main.scss';
 import React from 'react';
 import ReactDom from 'react-dom';
 import request from 'superagent';
@@ -28,22 +29,24 @@ class SearchForm extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    this.props.handleSearch(this.state.boardName, this.state.limit);
+    if ((this.state.boardName !== '' )&&(this.state.limit !== '')) {
+      this.props.handleSearch(this.state.boardName, this.state.limit);
+    } 
   }
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit} className={this.props.error ? 'formError' : 'formValid'}>
         <input 
           type='text'
           name='boardName'
           placeholder='enter board name'
-          required='true'
+          required
           value={this.boardName}
           onChange={this.handleBoardNameChange} />
         <input 
           type='number'
           name='limit'
-          required='true'
+          required
           min='1'
           max='99'
           placeholder='enter number between 1 and 100 to set how may results you would like'
@@ -59,24 +62,20 @@ class SearchResultList extends React.Component {
     super(props);
   }
 
-  // addTopic(topic) {
-
-  // }
   render() {
     return (
       <div>
         {this.props.topics ?
           <section>
-            <h1>Results</h1>
+            <h2>Results</h2>
             <ul>
               {this.props.topics.map((item, i) => {
                   
                 return (
                   <li key={i}>
-                    <a href={item.data.url}><h4>{i + 1}</h4><h3>{item.data.title}</h3><p>{item.data.ups}upvotes</p></a>
+                    <h4>{i+1}</h4><a href={item.data.url}><h3>   .  {item.data.title}</h3></a><p>{item.data.ups} upvotes</p>
                   </li>
                 );
-                
               })}
             </ul> 
           </section> :
@@ -94,6 +93,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       topics:[],
+      error: null,
     };
     // this.handleTopics = this.handleTopics.bind(this);
     this.getApp = this.getApp.bind(this);
@@ -107,10 +107,13 @@ class App extends React.Component {
         let topics2 = topics.filter(topics => !topics.data.stickied);
         return topics2;
       })
-      .then(topics => this.setState({topics}))
+      .then(topics => this.setState({topics, error: null}))
         
-      .catch(error => {
-        console.log(error.message);
+      .catch(err => {
+        this.setState({
+          topics: null,
+          error: err,
+        });
       });
   }
 
@@ -129,9 +132,9 @@ class App extends React.Component {
   render() {
     return(
       
-      <section>
-        <h1>Search Form</h1>
-        <SearchForm handleSearch={this.handleSearch}/>
+      <section className='app'>
+        <h2>Search Form</h2>
+        <SearchForm handleSearch={this.handleSearch} error={this.state.error}/>
         <div>
           <SearchResultList topics={this.state.topics} />
         </div>
